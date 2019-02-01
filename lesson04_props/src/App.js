@@ -1,37 +1,60 @@
 import React, { Component } from 'react';
 import './App.css';
-import Product from './components/Product';
 
 class App extends Component {
-  render() {
-    var products = [{
-      id:1,
-      name:"Apple iPhone 6 Plus 16GB",
-      price:"15000000",
-      status: true,
-      image:"https://images-na.ssl-images-amazon.com/images/I/51We979ipcL._SX385_.jpg"
-    },{
-      id:2,
-      name:"Samsung Galaxy S7",
-      price:"19000000",
-      status: false,
-      image:"https://images-na.ssl-images-amazon.com/images/I/71VEYuQ8yrL._SY550_.jpg"
-    },{
-      id:3,
-      name:"Oppo F1s",
-      price:"7000000",
-      status: true,
-      image:"https://images-na.ssl-images-amazon.com/images/I/41UFVnYtHrL._SX425_.jpg"
-    }];
+  constructor(props) {
+    super(props);
+    this.state = {
+      products : [{
+        id:1,
+        name:"Apple iPhone 6 Plus 16GB",
+        price:"15.000.000",
+        status: true,
+        image:"https://images-na.ssl-images-amazon.com/images/I/51We979ipcL._SX385_.jpg"
+      },{
+        id:2,
+        name:"Samsung Galaxy S7",
+        price:"19.000.000",
+        status: true,
+        image:"https://images-na.ssl-images-amazon.com/images/I/71VEYuQ8yrL._SY550_.jpg"
+      },{
+        id:3,
+        name:"Oppo F1s",
+        price:"7.000.000",
+        status: true,
+        image:"https://images-na.ssl-images-amazon.com/images/I/41UFVnYtHrL._SX425_.jpg"
+      }],
+      isActive : true
+    };
 
-    let elements = products.map((product, index) => {
-      let result = "";
-      if (product.status) {
-        result = <Product key={product.id}
-        price={product.price}
-        image={product.image}>
-      {product.name}
-      </Product>
+    // this.onSetState = this.onSetState.bind(this);
+  }
+
+  onSetState = () => {
+    // if (this.state.isActive) {
+    //   this.setState({
+    //     isActive: false
+    //   });
+    // } else {
+    //   this.setState({
+    //     isActive: true
+    //   });
+    // }
+
+    this.setState({
+       isActive: !this.state.isActive
+    });
+  }
+
+  render() {
+    let elements = this.state.products.map((product, index) => {
+      let result = null;
+      if (this.state.isActive) {
+        result = <tr key={index}>
+        <td>{index}</td>
+        <td>{product.name}</td>
+        <td><span className="label label-success">{product.price } VND</span></td>
+      </tr>
       }
         return result;
     });
@@ -40,43 +63,28 @@ class App extends Component {
       <div>
         <nav className="navbar navbar-inverse">
             <div className="container-fluid">
-                <a className="navbar-brand">Bài 4: Props</a>
+                <a className="navbar-brand">State</a>
             </div>
         </nav>
         
         <div className="container">
           <div className="row">
             <div className="row">
-              <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                 { elements}
-
-                 {/* <Product name="Apple iPhone 6 Plus 16GB"
-                 price="15000000"
-                 image="https://images-na.ssl-images-amazon.com/images/I/51We979ipcL._SX385_.jpg"/>
-                 <Product name="Samsung Galaxy S7"
-                 price="19000000"
-                 image="https://images-na.ssl-images-amazon.com/images/I/71VEYuQ8yrL._SY550_.jpg"/>
-                 <Product name="Oppo F1s"
-                 price="7000000"
-                 image="https://images-na.ssl-images-amazon.com/images/I/41UFVnYtHrL._SX425_.jpg"/> */}
-
-                 {/* <Product 
-                 price="15000000"
-                 image="https://images-na.ssl-images-amazon.com/images/I/51We979ipcL._SX385_.jpg">
-                 Apple iPhone 6 Plus 16GB
-                 </Product>
-                 <Product
-                 price="19000000"
-                 image="https://images-na.ssl-images-amazon.com/images/I/71VEYuQ8yrL._SY550_.jpg">
-                 Samsung Galaxy S7
-                 </Product>
-                 <Product
-                 price="7000000"
-                 image="https://images-na.ssl-images-amazon.com/images/I/41UFVnYtHrL._SX425_.jpg">
-                 Oppo F1s
-                 </Product> */}
-                 
-              </div>
+              <table className="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>STT</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Giá</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {elements}
+                </tbody>
+              </table>
+              
+              <button type="button" className="btn btn-warning" onClick={this.onSetState}>Active: {this.state.isActive === true ? "true" : "false"}</button>
+              
             </div>
           </div>
         </div>
