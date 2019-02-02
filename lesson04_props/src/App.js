@@ -28,6 +28,11 @@ class App extends Component {
     };
 
     // this.onSetState = this.onSetState.bind(this);
+    this.onAddToCart = this.onAddToCart.bind(this);
+  }
+
+  onClick = () => {
+    console.log("Đây là app component!");
   }
 
   onSetState = () => {
@@ -46,6 +51,14 @@ class App extends Component {
     });
   }
 
+  onAddProduct = () => {
+    alert(this.refs.name.value);
+  }
+
+  onAddToCart(text){
+    alert(text);
+  }
+
   render() {
     let elements = this.state.products.map((product, index) => {
       let result = null;
@@ -53,7 +66,8 @@ class App extends Component {
         result = <tr key={index}>
         <td>{index}</td>
         <td>{product.name}</td>
-        <td><span className="label label-success">{product.price } VND</span></td>
+        <td><span className="label label-success">{product.price } VNĐ</span></td>
+        <td><a className="btn btn-primary" onClick={() => {this.onAddToCart(product.name)}}>Mua Ngay</a></td>
       </tr>
       }
         return result;
@@ -70,21 +84,38 @@ class App extends Component {
         <div className="container">
           <div className="row">
             <div className="row">
+              <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                  <div className="panel panel-danger">
+                  <div className="panel-heading">
+                      <h3 className="panel-title">Thêm Sản Phẩm</h3>
+                  </div>
+                    <div className="panel-body">
+                      <div className="form-group">
+                      <label>Tên sản phẩm</label>
+                      <input type="text" className="form-control" ref="name"/>
+                    </div>
+                    <button type="submit" className="btn btn-primary" onClick={this.onAddProduct}>Submit</button>
+                      </div>
+                  </div>
+              </div>
               <table className="table table-bordered table-hover">
                 <thead>
                   <tr>
                     <th>STT</th>
                     <th>Tên sản phẩm</th>
                     <th>Giá</th>
+                    <th>Mua Ngay</th>
                   </tr>
                 </thead>
                 <tbody>
                   {elements}
                 </tbody>
               </table>
-              
               <button type="button" className="btn btn-warning" onClick={this.onSetState}>Active: {this.state.isActive === true ? "true" : "false"}</button>
               
+              <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <button type="button" className="btn btn-warning" onClick={this.onClick}>Click Me!</button>
+              </div>
             </div>
           </div>
         </div>
