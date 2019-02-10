@@ -9,7 +9,8 @@ class App extends Component {
         super(props);
         this.state = {
             tasks: [],
-            isFormOpen: false
+            isFormOpen: false,
+            taskEditing: null
         };
     }
 
@@ -20,26 +21,6 @@ class App extends Component {
                 tasks: tasks
             });
         }
-    }
-
-    onGenerateData = () => {
-        var tasks = [
-            {
-                id: this.generateId(),
-                name: "Programming Study",
-                status: true
-            },{
-                id: this.generateId(),
-                name: "Swimming",
-                status: false
-            },{
-                id: this.generateId(),
-                name: "Trekking",
-                status: true
-            }
-        ];
-        this.setState({tasks:tasks});
-        localStorage.setItem("tasks", JSON.stringify(tasks));
     }
 
     s4() {
@@ -61,10 +42,79 @@ class App extends Component {
             isFormOpen: false
         });
     }
+
+    onShowForm = () => {
+        this.setState({
+            isFormOpen: true
+        });
+    }
+
+    onSubmit = (data) => {
+        var {tasks} = this.state;
+        if (data.id) {
+            var index = this.findIndex(data.id);
+            tasks[index] = data;
+        } else {
+            data.id = this.generateId();
+            tasks.push(data);
+        }
+        this.setState({
+            tasks: tasks,
+            taskEditing: null
+        });
+        localStorage.setItem("tasks",JSON.stringify(tasks));
+    }
+
+    onUpdateStatus = (id) => {
+        const { tasks } = this.state;
+        const newTasks = tasks.map(task => {
+          if (task.id === id) {
+            task.status = !task.status
+          }
+          return task;
+        })
+        this.setState({tasks: newTasks})
+        localStorage.setItem("tasks", JSON.stringify(newTasks));
+    }
+
+    onUpdateItem = (id) => {
+        var {tasks} = this.state;
+        var index = this.findIndex(id);
+        var taskEditing = tasks[index];
+        this.setState({
+            taskEditing: taskEditing
+        });
+        this.onShowForm();
+    }
+
+    onDeleteItem = (id) => {
+       var {tasks} = this.state;
+       var index = this.findIndex(id);
+       if (index !== -1) {
+            tasks.splice(index,1);
+            this.setState({
+                tasks: tasks
+            });
+            localStorage.setItem("tasks",JSON.stringify(tasks));
+       }
+       this.onCloseForm();
+    }
+
+    findIndex(id){
+        var {tasks} = this.state;
+        var result = -1;
+        tasks.forEach((task, index) => {
+            if (task.id === id) {
+                result = index;
+            }
+        });
+
+        return result;
+    }
     
   render() {
-      var {tasks, isFormOpen}=this.state;
-      var elmTaskForm = isFormOpen ? <TaskForm onCloseForm={this.onCloseForm}/> : "";
+      var {tasks, isFormOpen, taskEditing}=this.state;
+      var elmTaskForm = isFormOpen ? <TaskForm onSubmit={this.onSubmit} onCloseForm={this.onCloseForm} task={taskEditing}/> : "";
     return (
       <div className="container">
         <div className="text-center">
@@ -80,13 +130,10 @@ class App extends Component {
                 <button type="button" className="btn btn-primary" onClick={this.onToggleForm}>
                     <span className="fa fa-plus mr-5"></span>Add Task
                 </button>
-                <button type="button" className="btn btn-danger ml-5" onClick={this.onGenerateData}>
-                    Generate Data
-                </button>
                 {/* Search - Sort */}
                 <Control/>
                 {/* List */}
-                <TaskList tasks = {tasks}/>
+                <TaskList tasks = {tasks} onUpdateStatus={this.onUpdateStatus} onUpdateItem={this.onUpdateItem} onDeleteItem={this.onDeleteItem}/>
             </div>
         </div>
     </div>
