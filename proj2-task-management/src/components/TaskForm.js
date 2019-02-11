@@ -11,7 +11,7 @@ class TaskForm extends Component {
     }
 
     componentWillMount(){
-         if(this.props.task) {
+        if(this.props.task) {
             this.setState({
                 id: this.props.task.id,
                 name: this.props.task.name,
@@ -21,13 +21,19 @@ class TaskForm extends Component {
     }
 
     componentWillReceiveProps(nextProps){
-        // if(this.props.task) {
-            this.setState((prevState, nextProps) => ({
+        if (nextProps && nextProps.task) {
+            this.setState({
                 id: nextProps.task.id,
                 name: nextProps.task.name,
                 status: nextProps.task.status
-            }));
-        // }
+            });
+        } else if (!nextProps.task) {
+            this.setState({
+                id: "",
+                name: "",
+                status: false
+            });
+        }
     }
 
     onCloseForm = () => {
@@ -85,7 +91,7 @@ class TaskForm extends Component {
                 <br/>
                 <div className="text-center">
                     <button type="submit" className="btn btn-warning">{id !== "" ? "Save" : "Add"}</button>&nbsp;
-                    <button type="submit" className="btn btn-danger" onClick={this.onClear}>Cancel</button>
+                    <button type="button" className="btn btn-danger" onClick={this.onClear}>Cancel</button>
                 </div>
             </form>
         </div>

@@ -10,7 +10,12 @@ class App extends Component {
         this.state = {
             tasks: [],
             isFormOpen: false,
-            taskEditing: null
+            taskEditing: null,
+            filter: {
+                name: "",
+                status: -1
+            },
+            keyword: ""
         };
     }
 
@@ -25,16 +30,24 @@ class App extends Component {
 
     s4() {
         return Math.floor((1+Math.random()) * 0x10000).toString(16).substring(1);
-    }
+    } 
 
     generateId(){
         return this.s4() + this.s4() + "-" + this.s4() + "-" + this.s4() + "-" + this.s4() + "-" + this.s4() + this.s4() + this.s4();
     }
     
     onToggleForm = () => {
-        this.setState({
-            isFormOpen: !this.state.isFormOpen
-        });
+        if (this.state.isFormOpen && this.state.taskEditing !== null) {
+            this.setState({
+                isFormOpen: true,
+                taskEditing: null
+            });
+        } else {
+            this.setState({
+                isFormOpen: !this.state.isFormOpen,
+                taskEditing: null
+            });
+        }
     }
 
     onCloseForm = () => {
@@ -100,6 +113,21 @@ class App extends Component {
        this.onCloseForm();
     }
 
+    onFilter = (filterName, filterStatus) => {
+        this.setState({
+            filter: {
+                name: filterName.toLowerCase(),
+                status: parseInt(filterStatus, 10)
+            }
+        });
+    }
+
+    onSearch = (keyword) => {
+        this.setState({
+            keyword: keyword
+        });
+    }
+
     findIndex(id){
         var {tasks} = this.state;
         var result = -1;
@@ -113,7 +141,29 @@ class App extends Component {
     }
     
   render() {
-      var {tasks, isFormOpen, taskEditing}=this.state;
+      var {tasks, isFormOpen, taskEditing, filter, keyword}=this.state;
+
+      if (filter) {
+        if (filter.name) {
+            tasks = tasks.filter((task) => {
+                return task.name.toLowerCase().indexOf(filter.name) !== -1;
+            });
+        } 
+        tasks = tasks.filter((task) => {
+            if (filter.status === -1) {
+                return task;
+            } else {
+                return task.status === (filter.status === 0 ? false : true);
+            }
+        });
+      }
+
+      if (keyword) {
+        tasks = tasks.filter((task) => {
+            return task.name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1
+        });
+      }
+ 
       var elmTaskForm = isFormOpen ? <TaskForm onSubmit={this.onSubmit} onCloseForm={this.onCloseForm} task={taskEditing}/> : "";
     return (
       <div className="container">
@@ -131,9 +181,9 @@ class App extends Component {
                     <span className="fa fa-plus mr-5"></span>Add Task
                 </button>
                 {/* Search - Sort */}
-                <Control/>
+                <Control onSearch={this.onSearch}/>
                 {/* List */}
-                <TaskList tasks = {tasks} onUpdateStatus={this.onUpdateStatus} onUpdateItem={this.onUpdateItem} onDeleteItem={this.onDeleteItem}/>
+                <TaskList tasks = {tasks} onFilter={this.onFilter} onUpdateStatus={this.onUpdateStatus} onUpdateItem={this.onUpdateItem} onDeleteItem={this.onDeleteItem}/>
             </div>
         </div>
     </div>
