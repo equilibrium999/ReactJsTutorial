@@ -3,6 +3,7 @@ import './App.css';
 import TaskForm from "./components/TaskForm";
 import Control from "./components/Control";
 import TaskList from "./components/TaskList";
+import _ from "lodash"
 
 class App extends Component {
     constructor(props) {
@@ -81,15 +82,19 @@ class App extends Component {
     }
 
     onUpdateStatus = (id) => {
-        const { tasks } = this.state;
-        const newTasks = tasks.map(task => {
-          if (task.id === id) {
-            task.status = !task.status
-          }
-          return task;
-        })
-        this.setState({tasks: newTasks})
-        localStorage.setItem("tasks", JSON.stringify(newTasks));
+        var { tasks } = this.state;
+        var index = _.findIndex(tasks, (task) => {
+            return task.id === id;
+        });
+        // const newTasks = tasks.map(task => {
+        //   if (task.id === id) {
+        //     task.status = !task.status
+        //   }
+        //   return task;
+        // })
+        tasks[index].status = !tasks[index].status;
+        this.setState({tasks: tasks})
+        localStorage.setItem("tasks", JSON.stringify(tasks));
     }
 
     onUpdateItem = (id) => {
@@ -154,17 +159,27 @@ class App extends Component {
 
       if (filter) {
         if (filter.name) {
-            tasks = tasks.filter((task) => {
-                return task.name.toLowerCase().indexOf(filter.name) !== -1;
-            });
+            tasks = _.filter(tasks, function(task) { return task.name.toLowerCase().indexOf(filter.name) !== -1; });
+            // tasks = tasks.filter((task) => {
+            //     return task.name.toLowerCase().indexOf(filter.name) !== -1;
+            // });
         } 
-        tasks = tasks.filter((task) => {
+
+        tasks = _.filter(tasks, function(task) { 
             if (filter.status === -1) {
                 return task;
             } else {
                 return task.status === (filter.status === 0 ? false : true);
-            }
+            } 
         });
+
+        // tasks = tasks.filter((task) => {
+        //     if (filter.status === -1) {
+        //         return task;
+        //     } else {
+        //         return task.status === (filter.status === 0 ? false : true);
+        //     }
+        // });
       }
 
       if (keyword) {
