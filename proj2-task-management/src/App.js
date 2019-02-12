@@ -15,7 +15,9 @@ class App extends Component {
                 name: "",
                 status: -1
             },
-            keyword: ""
+            keyword: "",
+            sortBy: "name",
+            sortValue: 1
         };
     }
 
@@ -128,6 +130,13 @@ class App extends Component {
         });
     }
 
+    onSort = (sortBy, sortValue) => {
+        this.setState({
+            sortBy: sortBy,
+            sortValue: sortValue
+        });
+    }
+
     findIndex(id){
         var {tasks} = this.state;
         var result = -1;
@@ -141,7 +150,7 @@ class App extends Component {
     }
     
   render() {
-      var {tasks, isFormOpen, taskEditing, filter, keyword}=this.state;
+      var {tasks, isFormOpen, taskEditing, filter, keyword, sortBy, sortValue}=this.state;
 
       if (filter) {
         if (filter.name) {
@@ -163,6 +172,21 @@ class App extends Component {
             return task.name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1
         });
       }
+
+      if (sortBy === "name") {
+        tasks.sort((a, b) => {
+            if (a.name > b.name) return sortValue;
+            else if (a.name < b.name) return -sortValue;
+            else return 0;
+        });
+      } else {
+        tasks.sort((a, b) => {
+            if (a.status > b.status) return -sortValue;
+            else if (a.status < b.status) return sortValue;
+            else return 0;
+        });
+      }
+      
  
       var elmTaskForm = isFormOpen ? <TaskForm onSubmit={this.onSubmit} onCloseForm={this.onCloseForm} task={taskEditing}/> : "";
     return (
@@ -181,7 +205,7 @@ class App extends Component {
                     <span className="fa fa-plus mr-5"></span>Add Task
                 </button>
                 {/* Search - Sort */}
-                <Control onSearch={this.onSearch}/>
+                <Control onSearch={this.onSearch} onSort={this.onSort} sortBy={sortBy} sortValue={sortValue}/>
                 {/* List */}
                 <TaskList tasks = {tasks} onFilter={this.onFilter} onUpdateStatus={this.onUpdateStatus} onUpdateItem={this.onUpdateItem} onDeleteItem={this.onDeleteItem}/>
             </div>
